@@ -1,0 +1,367 @@
+                               Q.1 Category CRUD Operation
+1. Create Categories class-
+import javax.persistence.Entity;
+import javax.persistence.Id;
+@Entity
+public class Categories {
+	
+	
+	@Id	
+	int id;
+	String name;
+	String Categories;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getCategories() {
+		return Categories;
+	}
+	public void setCategories(String categories) {
+		Categories = categories;
+	}
+	@Override
+	public String toString() {
+		return "Categories [id=" + id + ", name=" + name + ", Categories=" + Categories + "]";
+	}
+	
+	public Categories(int id, String name, String categories) {
+		super();
+		this.id = id;
+		this.name = name;
+		Categories = categories;
+	}
+
+}
+
+2.Create CategoriesAPI class-
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+@RestController
+@RequestMapping("api")
+
+public class CategoriesAPI {
+	
+		@Autowired             
+		public SessionFactory Factory;
+		
+		ArrayList<Categories> arrayList=new ArrayList();
+		
+		CategoriesAPI()
+		{
+			arrayList.add(new Categories(1,"ram","male"));
+			arrayList.add(new Categories(2,"sita","female"));
+	        }
+		
+			
+	List<Categories> list;
+
+		@PostConstruct
+		void init()
+		{
+			getLatestData();
+			
+		}
+		void getLatestData()
+		{
+			Session session = Factory.openSession();
+			Query query=session.createQuery("from categories");
+			List list=query.list();
+			System.out.println("Init method is called.data from database");
+			System.out.println(list);
+		}
+
+		@GetMapping("allCategories")
+		
+	     List<Categories> allCategories()
+	     {
+			getLatestData();
+	    	 return list;
+	     }
+		@GetMapping("Categories/{id}")
+		
+		
+		Categories getCategories(@PathVariable int id)
+		{
+		Categories cat =null;
+		for(Categories categories :list)
+		{
+			if(categories.id==id)
+			{
+				System.out.println(categories);
+				cat=categories;
+				
+			}
+		}
+		return cat;
+		}
+
+	@PostMapping("categories")
+	List<Categories> addCategories(@RequestBody Categories categories)
+	{
+			
+		list.add(categories);
+			
+		System.out.println(list);
+		
+		return list;
+	}
+		
+	
+	@PutMapping("categories")
+	String updateCategories(@RequestBody Categories clientCategories)
+	{
+		Categories cat=null;
+		
+		for(Categories categories:list)
+		{
+			if(categories.id==clientCategories.id)
+			{
+				cat=categories;
+							
+			}
+		}
+				
+		cat.setCategories(clientCategories.categories);
+		
+		System.out.println(list);
+
+		return "categories updated in arraylist";
+	}
+
+
+	@DeleteMapping("categories/{id}")
+	String deleteCategories(@PathVariable int id)
+	{
+		try
+		{
+			
+			Categories cat=null;
+			
+				for(Categories categories:list)
+				{
+					if(categories.id==id)
+					{
+							cat=categories;
+					}
+				}
+				
+				list.remove(cat);
+
+				System.out.println(list);
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println("ConcurrentModificationException is handled");
+		}
+				
+			return "categories deleted from  arraylist";
+	}
+	}
+
+ 
+
+                                   Q.2 ProductCRUD Operation
+1. Create Categories class-
+public class Product {
+	int id;
+	String product;
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getProduct() {
+		return product;
+	}
+	public void setProduct(String product) {
+		this.product = product;
+	}
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", product=" + product + "]";
+	}
+	
+	public Product(int id, String product) {
+		super();
+		this.id = id;
+		this.product = product;
+	}
+	
+
+}
+2.Create ProductAPI class-
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+@RestController
+@RequestMapping("api")
+
+public class ProductAPI {
+	
+		
+	
+		
+		@Autowired             
+		public SessionFactory Factory;
+		
+		ArrayList<Product> arrayList=new ArrayList();
+		
+		ProductAPI()
+		{
+			arrayList.add(new Product(1,"Samsung"));
+			arrayList.add(new Product(2,"vivo"));
+			arrayList.add(new Product(3,"redmi"));
+			arrayList.add(new Product(4,"moto"));
+			
+		}
+		
+			
+	List<Product> list;
+
+	
+		@PostConstruct
+		void init()
+		{
+			getLatestData();
+			
+		}
+		void getLatestData()
+		{
+			Session session = Factory.openSession();
+			Query query=session.createQuery("from arraylist Product ");
+			List list=query.list();
+			System.out.println("Init method is called.data from database");
+			System.out.println(list);
+		}
+
+		@GetMapping("allProduct")
+		
+	     List<Product> allProduct()
+	     {
+			getLatestData();
+	    	 return list;
+	     }
+		@GetMapping("Product/{id}")
+		
+		
+		Product getCategories(@PathVariable int id)
+		{
+			Product prod =null;
+		for( Product product :list)
+		{
+			if(product.id==id)
+			{
+				System.out.println(product);
+				prod=product;
+				
+			}
+		}
+		return prod;
+		}
+
+	@PostMapping("product")
+	List<Product> addProduct(@RequestBody Product product)
+	{
+			
+		list.add(product);
+			
+		System.out.println(list);
+		
+		return list;
+	}
+		
+	
+	@PutMapping("product")
+	String updateProduct(@RequestBody Product clientProduct)
+	{
+		Product prod=null;
+		
+		for(Product product:list)
+		{
+			if(product.id==clientProduct.id)
+			{
+				prod=product;
+							
+			}
+		}
+				
+		prod.setProduct(clientProduct.product);
+		
+		System.out.println(list);
+
+		return "categories updated in arraylist";
+	}
+
+
+	@DeleteMapping("categories/{id}")
+	String deleteProduct(@PathVariable int id)
+	{
+		try
+		{
+			
+			Product prod=null;
+			
+				for(Product product:list)
+				{
+					if(product.id==id)
+					{
+							prod=product;
+					}
+				}
+				
+				list.remove(prod);
+
+				System.out.println(list);
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println("ConcurrentModificationException is handled");
+		}
+				
+			return "categories deleted from  arraylist";
+	}
+	
+}
